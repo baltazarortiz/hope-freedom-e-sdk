@@ -1,0 +1,13 @@
+#include <unistd.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include "weak_under_alias.h"
+
+int __wrap_isatty(int fd)
+{
+    if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO)
+        return 1;
+
+    return 0;
+}
+weak_under_alias(isatty);

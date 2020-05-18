@@ -5,5 +5,7 @@ install:
 	cp -r freedom-e-sdk/bsp/* $(ISP_PREFIX)/hifive_bsp/
 	mkdir -p $(ISP_PREFIX)/vcu118_bsp
 	cp -r vcu118/* $(ISP_PREFIX)/vcu118_bsp/
+	mkdir -p $(ISP_PREFIX)/refpipe_bsp
+	cp -r refpipe/* $(ISP_PREFIX)/refpipe_bsp/
 
 clean:
