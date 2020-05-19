@@ -113,41 +113,11 @@ _mstart:
     /* initialize global pointer */
     la	gp, _gp
 
-init_bss:
-    /* init bss section */
-    la	a0, __bss_start
-    la	a1, (__bss_end-4) /* section end is actually the start of the next section */
-    li	a2, 0x0
-    jal	fill_block
-
-init_sbss:
-    /* init bss section */
-    la	a0, __sbss_start
-    la	a1, (__sbss_end-4) /* section end is actually the start of the next section */
-    li	a2, 0x0
-    jal	fill_block
-
-write_stack_pattern:
-    /* init bss section */
-    la	a0, _stack_end  /* note the stack grows from top to bottom */
-    la	a1, (__stack-4)   /* section end is actually the start of the next section */
-    li	a2, 0xABABABAB
-    jal	fill_block
-
 init_stack:
     /* set stack pointer */
     la	sp, _stack
 
     j	_init
-
-/* Fills memory blocks */
-fill_block:
-    sw		a2, 0(a0)
-    bgeu	a0, a1, fb_end
-    addi	a0, a0, 4
-    j		fill_block
-fb_end:
-    ret
 
 .section ".tohost","aw",@progbits
 .align 6

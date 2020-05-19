@@ -75,15 +75,6 @@ OUTPUT_ARCH( "riscv" )
 _STACK_SIZE = 0x4000;
 _HEAP_SIZE  = 0x8000;
 
-/*****************************************************************************
- * Define memory layout
- ****************************************************************************/
-MEMORY {
-   cmem : ORIGIN = 0x80000000, LENGTH = 0x00800000
-	imem : ORIGIN = 0xc0000000, LENGTH = 0x00080000
-	dmem : ORIGIN = 0xc0080000, LENGTH = 0x00800000
-}
-
 /* Specify the default entry point to the program */
 
 ENTRY(boot)
@@ -92,69 +83,67 @@ ENTRY(boot)
  * Define the sections, and where they are mapped in memory 
  ****************************************************************************/
 SECTIONS {
-   .uncached : {
-      . = ALIGN(64);
-      *(.uncached);
-		*(.uncached.*);
-   } > cmem
-	.text : {
-      . = ALIGN(8);
-	    *boot.o(.text);
-		*(.text);
-		*(.text.*);
-	} > imem
+   . = 0x80000000;
 
-	.init : {
-	   KEEP (*(.init))
-	} > imem
-
-    .fini : {
-       KEEP (*(.fini))
-    } > imem
-
-    .rodata : {
-       __rodata_start = .;
-       *(.rodata)
-       *(.rodata.*)
-       *(.gnu.linkonce.r.*)
-       __rodata_end = .;
-	} > dmem
-
-    .tohost ALIGN(0x1000) : { *(.tohost) } > dmem
-
-	.sbss : {
-	   __sbss_start = .;
-	   *(.sbss)
-	   *(.sbss.*)
-	   *(.gnu.linkonce.sb.*)
-	   __sbss_end = .;
-	} > dmem
-
-    .sdata : {
-        _gp = . + 0x800;
-        *(.srodata.cst16) *(.srodata.cst8) *(.srodata.cst4) *(.srodata.cst2) *(.srodata*)
-        *(.sdata .sdata.* .gnu.linkonce.s.*)
-     }	> dmem
-
-	.data : {
+   .text : {
 	   . = ALIGN(8);
-	   __data_start = .;
-	   *(.data)
-	   *(.data.*)
-	   *(.gnu.linkonce.d.*)
-	   __data_end = .;
-	} > dmem
+	   *boot.o(.text);
+	   *(.text);
+	   *(.text.*);
+   }
+   .rodata : {
+	   __rodata_start = .;
+	   *(.rodata);
+	   *(.rodata.*);
+	   *(.gnu.linkonce.r.*);
+	   __rodata_end = .;
+  }
 
-    .bss : {
-       . = ALIGN(8);
-       __bss_start = .;
-       *(.bss)
-       *(.bss.*)
-       *(.gnu.linkonce.b.*)
-       *(COMMON)
-       . = ALIGN(8);
-       __bss_end = .;
-    } > dmem
+  /* Host-Target Interface */                                                 
+  .htif ALIGN(0x40) : { 
+	  *(.tohost);
+	  *(.htif); 
+  }
+
+  /*.tohost ALIGN(0x1000) : { *(.tohost) }*/
+
+  .sbss : {
+	  __sbss_start = .;
+	  *(.sbss);
+	  *(.sbss.*);
+	  *(.gnu.linkonce.sb.*);
+	  __sbss_end = .;
+  }
+
+  .sdata : {
+	  _gp = . + 0x800;
+	  *(.srodata.cst16);
+	  *(.srodata.cst8);
+	  *(.srodata.cst4);
+	  *(.srodata.cst2);
+	  *(.srodata*);
+	  *(.sdata .sdata.* .gnu.linkonce.s.*)
+  }
+
+  .data : {
+	  . = ALIGN(8);
+	  __data_start = .;
+	  *(.data);
+	  *(.data.*);
+	  *(.gnu.linkonce.d.*);
+	  __data_end = .;
+  }
+
+  .bss : {
+	  . = ALIGN(8);
+	  __bss_start = .;
+	  *(.bss);
+	  *(.bss.*);
+	  *(.gnu.linkonce.b.*);
+	  *(COMMON);
+	  . = ALIGN(8);
+	  __bss_end = .;
+  }
 
    /* Generate Stack and Heap definitions
     * Stack is used by the ISR and the main() for initialization
@@ -167,8 +156,7 @@ SECTIONS {
        _stack = .;
        __stack = _stack;
        . = ALIGN(64);
-       __freertos_irq_stack_top = .;
-    } > dmem
+    }
 
    /* Heap grows upwards */
     .heap : {
@@ -177,10 +165,6 @@ SECTIONS {
        _heap_start = .;
        . += _HEAP_SIZE;
        _heap_end = .;
-    } > dmem
-
-    .dover_metadata : {
-      KEEP(*(.dover_metadata))
     }
 
     _end = .;

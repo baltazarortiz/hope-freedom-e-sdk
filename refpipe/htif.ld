@@ -1,1 +1,0 @@
-/home/ubuntu/testnew/chipyard-ref-pipe/toolchains/libgloss/util/htif.ld
