@@ -83,7 +83,7 @@ _mstart:
     li	x3, 0
     li	x4, 0
     li	x5, 0
-	li	x6, 0
+    li	x6, 0
     li	x7, 0
     li	x8, 0
     li	x9, 0

@@ -6,18 +6,18 @@
 
 int __wrap_puts(const char *s)
 {
-  int len = 0;
   while (*s != '\0') {
-    uart0_txchar(*s);
+    while (UART0_REG(UART_REG_TXFIFO) & 0x80000000) ;
+    UART0_REG(UART_REG_TXFIFO) = *s;
 
     if (*s == '\n') {
-      uart0_txchar('\r');
+      while (UART0_REG(UART_REG_TXFIFO) & 0x80000000) ;
+      UART0_REG(UART_REG_TXFIFO) = '\r';
     }
 
-    ++len;
     ++s;
   }
 
-  return len;
+  return 0;
 }
 weak_under_alias(puts);
