@@ -83,7 +83,7 @@ ENTRY(boot)
  * Define the sections, and where they are mapped in memory 
  ****************************************************************************/
 SECTIONS {
-   . = 0x80000000;
+   . = 0x70000000;
 
    .text : {
 	   . = ALIGN(8);
